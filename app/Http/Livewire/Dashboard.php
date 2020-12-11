@@ -130,9 +130,8 @@ class Dashboard extends Component
     {
         if ($attribute === "files") {
             $this->pairedFiles = collect($this->files)
-                ->sortBy(function (TemporaryUploadedFile $file) {
-                    return (strlen($file->getClientOriginalName())) . $file->getClientOriginalName();
-                })->values()
+                ->sortBy(fn(TemporaryUploadedFile $file) => $file->getClientOriginalName(), SORT_NATURAL)
+                ->values()
                 ->map(function (TemporaryUploadedFile $file, $index) {
                     return [
                         "file" => $file,
