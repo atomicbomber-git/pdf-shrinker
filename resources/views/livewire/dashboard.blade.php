@@ -14,10 +14,9 @@
 
                         <input
                                 x-ref="files"
-                                @change="console.log($refs.files.files)"
                                 wire:model="files"
                                 multiple
-                                accept="application/pdf,images"
+                                accept="application/pdf,image/*"
                                 class="form-control @error('pairedFiles') is-invalid @enderror"
                                 type="file"
                                 id="files"
@@ -136,6 +135,7 @@
                             <th> #</th>
                             <th> Filename</th>
                             <th> Filetype</th>
+                            <th class="text-center"> Preview</th>
                             <th class="text-end"> Size</th>
                             <th class="text-end"> Order</th>
                             <th class="text-center"> Controls</th>
@@ -150,6 +150,15 @@
                                 <td> {{ $loop->iteration }} </td>
                                 <td> {{ $pairedFile["file"]->getClientOriginalName() }} </td>
                                 <td> {{ $pairedFile["file"]->guessExtension() }} </td>
+                                <td class="text-center">
+                                    <button
+                                            wire:click="displayPreview({{ $index }})"
+                                            type="button"
+                                            class="btn btn-sm btn-info"
+                                    >
+                                        Preview
+                                    </button>
+                                </td>
                                 <td class="text-end"> {{ $pairedFile["size"] }} </td>
                                 <td class="text-end">
                                     <input
@@ -227,4 +236,37 @@
             </div>
         </div>
     @endforeach
+
+    <div id="preview-modal"
+         class="modal"
+         tabindex="-1"
+    >
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Image Preview
+                </div>
+                <div class="modal-body">
+                    @if($current_preview)
+                        <img
+                                style="min-width: 600px"
+                                class="img-fluid"
+                                src="data:image/jpeg;base64, {{ $current_preview }}"
+                                alt="Image"
+                        >
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const previewModal = new bootstrap.Modal(document.getElementById('preview-modal'))
+
+            Livewire.on("preview", () => {
+                previewModal.toggle()
+            })
+        }
+    </script>
 </div>
